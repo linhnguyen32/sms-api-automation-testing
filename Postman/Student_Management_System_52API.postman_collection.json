@@ -1,0 +1,114 @@
+{
+  "info": {
+    "_postman_id": "sms-52-api-collection",
+    "name": "Student Management System (SMS) - 52 APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Module 1 - Authentication",
+      "item": [
+        { "name": "01 Login", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth","login"] }, "request": { "method": "POST", "body": { "mode": "raw", "raw": "{\n  \"username\": \"student01\",\n  \"password\": \"123456\"\n}" }, "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth","login"] } }}},
+        { "name": "02 Logout", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": { "raw": "{{base_url}}/auth/logout", "host": ["{{base_url}}"], "path": ["auth","logout"] } }},
+        { "name": "03 Register", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"username\": \"student02\", \"email\": \"sv02@test.com\", \"password\": \"123456\" }" }, "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth","register"] } }},
+        { "name": "04 Refresh Token", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"refreshToken\": \"{{refresh_token}}\" }" }, "url": { "raw": "{{base_url}}/auth/refresh-token", "host": ["{{base_url}}"], "path": ["auth","refresh-token"] } }},
+        { "name": "05 Forgot Password", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"email\": \"student01@test.com\" }" }, "url": { "raw": "{{base_url}}/auth/forgot-password", "host": ["{{base_url}}"], "path": ["auth","forgot-password"] } }},
+        { "name": "06 Reset Password", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"token\": \"reset_token\", \"newPassword\": \"new123456\" }" }, "url": { "raw": "{{base_url}}/auth/reset-password", "host": ["{{base_url}}"], "path": ["auth","reset-password"] } } }
+      ]
+    },
+
+    {
+      "name": "Module 2 - Student Management",
+      "item": [
+        { "name": "07 Get Students", "request": { "method": "GET", "url": { "raw": "{{base_url}}/students", "host": ["{{base_url}}"], "path": ["students"] } }},
+        { "name": "08 Get Student By ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/students/{{student_id}}", "host": ["{{base_url}}"], "path": ["students","{{student_id}}"] } }},
+        { "name": "09 Create Student", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"studentCode\": \"SV001\", \"fullName\": \"Nguyen Van A\", \"email\": \"sv01@test.com\" }" }, "url": { "raw": "{{base_url}}/students", "host": ["{{base_url}}"], "path": ["students"] } }},
+        { "name": "10 Update Student", "request": { "method": "PUT", "body": { "mode": "raw", "raw": "{ \"fullName\": \"Nguyen Van A Updated\" }" }, "url": { "raw": "{{base_url}}/students/{{student_id}}", "host": ["{{base_url}}"], "path": ["students","{{student_id}}"] } }},
+        { "name": "11 Delete Student", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/students/{{student_id}}", "host": ["{{base_url}}"], "path": ["students","{{student_id}}"] } }},
+        { "name": "12 Update Student Status", "request": { "method": "PUT", "body": { "mode": "raw", "raw": "{ \"status\": \"INACTIVE\" }" }, "url": { "raw": "{{base_url}}/students/{{student_id}}/status", "host": ["{{base_url}}"], "path": ["students","{{student_id}}","status"] } }},
+        { "name": "13 Get Student Courses", "request": { "method": "GET", "url": { "raw": "{{base_url}}/students/{{student_id}}/courses", "host": ["{{base_url}}"], "path": ["students","{{student_id}}","courses"] } }},
+        { "name": "14 Get Student Activities", "request": { "method": "GET", "url": { "raw": "{{base_url}}/students/{{student_id}}/activities", "host": ["{{base_url}}"], "path": ["students","{{student_id}}","activities"] } }}
+      ]
+    },
+
+    {
+      "name": "Module 3 - Lecturer Management",
+      "item": [
+        { "name": "15 Get Lecturers", "request": { "method": "GET", "url": { "raw": "{{base_url}}/lecturers", "host": ["{{base_url}}"], "path": ["lecturers"] } }},
+        { "name": "16 Get Lecturer By ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/lecturers/{{lecturer_id}}", "host": ["{{base_url}}"], "path": ["lecturers","{{lecturer_id}}"] } }},
+        { "name": "17 Create Lecturer", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"name\": \"Dr. Tran B\", \"email\": \"lecturer@test.com\" }" }, "url": { "raw": "{{base_url}}/lecturers", "host": ["{{base_url}}"], "path": ["lecturers"] } }},
+        { "name": "18 Update Lecturer", "request": { "method": "PUT", "body": { "mode": "raw", "raw": "{ \"name\": \"Dr. Tran B Updated\" }" }, "url": { "raw": "{{base_url}}/lecturers/{{lecturer_id}}", "host": ["{{base_url}}"], "path": ["lecturers","{{lecturer_id}}"] } }},
+        { "name": "19 Delete Lecturer", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/lecturers/{{lecturer_id}}", "host": ["{{base_url}}"], "path": ["lecturers","{{lecturer_id}}"] } }},
+        { "name": "20 Get Lecturer Courses", "request": { "method": "GET", "url": { "raw": "{{base_url}}/lecturers/{{lecturer_id}}/courses", "host": ["{{base_url}}"], "path": ["lecturers","{{lecturer_id}}","courses"] } }}
+      ]
+    },
+
+    {
+      "name": "Module 4 - Course Management",
+      "item": [
+        { "name": "21 Get Courses", "request": { "method": "GET", "url": { "raw": "{{base_url}}/courses", "host": ["{{base_url}}"], "path": ["courses"] } }},
+        { "name": "22 Get Course By ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/courses/{{course_id}}", "host": ["{{base_url}}"], "path": ["courses","{{course_id}}"] } }},
+        { "name": "23 Create Course", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"courseCode\": \"CS101\", \"courseName\": \"Intro to CS\", \"credit\": 3 }" }, "url": { "raw": "{{base_url}}/courses", "host": ["{{base_url}}"], "path": ["courses"] } }},
+        { "name": "24 Update Course", "request": { "method": "PUT", "body": { "mode": "raw", "raw": "{ \"courseName\": \"Intro to Computer Science\" }" }, "url": { "raw": "{{base_url}}/courses/{{course_id}}", "host": ["{{base_url}}"], "path": ["courses","{{course_id}}"] } }},
+        { "name": "25 Delete Course", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/courses/{{course_id}}", "host": ["{{base_url}}"], "path": ["courses","{{course_id}}"] } }},
+        { "name": "26 Get Course Lecturers", "request": { "method": "GET", "url": { "raw": "{{base_url}}/courses/{{course_id}}/lecturers", "host": ["{{base_url}}"], "path": ["courses","{{course_id}}","lecturers"] } }}
+      ]
+    },
+
+    {
+      "name": "Module 5 - Class Management",
+      "item": [
+        { "name": "27 Get Classes", "request": { "method": "GET", "url": { "raw": "{{base_url}}/classes", "host": ["{{base_url}}"], "path": ["classes"] } }},
+        { "name": "28 Get Class By ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/classes/{{class_id}}", "host": ["{{base_url}}"], "path": ["classes","{{class_id}}"] } }},
+        { "name": "29 Create Class", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"classCode\": \"CLC01\", \"courseId\": 1, \"semester\": \"2025A\" }" }, "url": { "raw": "{{base_url}}/classes", "host": ["{{base_url}}"], "path": ["classes"] } }},
+        { "name": "30 Update Class", "request": { "method": "PUT", "body": { "mode": "raw", "raw": "{ \"semester\": \"2025B\" }" }, "url": { "raw": "{{base_url}}/classes/{{class_id}}", "host": ["{{base_url}}"], "path": ["classes","{{class_id}}"] } }},
+        { "name": "31 Delete Class", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/classes/{{class_id}}", "host": ["{{base_url}}"], "path": ["classes","{{class_id}}"] } }},
+        { "name": "32 Get Class Students", "request": { "method": "GET", "url": { "raw": "{{base_url}}/classes/{{class_id}}/students", "host": ["{{base_url}}"], "path": ["classes","{{class_id}}","students"] } }}
+      ]
+    },
+
+    {
+      "name": "Module 6 - Enrollment",
+      "item": [
+        { "name": "33 Create Enrollment", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"studentId\": 1, \"classId\": 1 }" }, "url": { "raw": "{{base_url}}/enrollments", "host": ["{{base_url}}"], "path": ["enrollments"] } }},
+        { "name": "34 Delete Enrollment", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/enrollments/{{enrollment_id}}", "host": ["{{base_url}}"], "path": ["enrollments","{{enrollment_id}}"] } }},
+        { "name": "35 Get Enrollments By Student", "request": { "method": "GET", "url": { "raw": "{{base_url}}/enrollments/student/{{student_id}}", "host": ["{{base_url}}"], "path": ["enrollments","student","{{student_id}}"] } }},
+        { "name": "36 Get Enrollments By Class", "request": { "method": "GET", "url": { "raw": "{{base_url}}/enrollments/class/{{class_id}}", "host": ["{{base_url}}"], "path": ["enrollments","class","{{class_id}}"] } }},
+        { "name": "37 Update Enrollment Status", "request": { "method": "PUT", "body": { "mode": "raw", "raw": "{ \"status\": \"APPROVED\" }" }, "url": { "raw": "{{base_url}}/enrollments/{{enrollment_id}}/status", "host": ["{{base_url}}"], "path": ["enrollments","{{enrollment_id}}","status"] } }},
+        { "name": "38 Get Enrollment By ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/enrollments/{{enrollment_id}}", "host": ["{{base_url}}"], "path": ["enrollments","{{enrollment_id}}"] } }}
+      ]
+    },
+
+    {
+      "name": "Module 7 - Grade Management",
+      "item": [
+        { "name": "39 Get Grades By Student", "request": { "method": "GET", "url": { "raw": "{{base_url}}/grades/student/{{student_id}}", "host": ["{{base_url}}"], "path": ["grades","student","{{student_id}}"] } }},
+        { "name": "40 Create Grade", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"enrollmentId\": 1, \"midterm\": 8, \"final\": 9 }" }, "url": { "raw": "{{base_url}}/grades", "host": ["{{base_url}}"], "path": ["grades"] } }},
+        { "name": "41 Update Grade", "request": { "method": "PUT", "body": { "mode": "raw", "raw": "{ \"final\": 9.5 }" }, "url": { "raw": "{{base_url}}/grades/{{grade_id}}", "host": ["{{base_url}}"], "path": ["grades","{{grade_id}}"] } }},
+        { "name": "42 Get Grades By Class", "request": { "method": "GET", "url": { "raw": "{{base_url}}/grades/class/{{class_id}}", "host": ["{{base_url}}"], "path": ["grades","class","{{class_id}}"] } }},
+        { "name": "43 Get Grades By Course", "request": { "method": "GET", "url": { "raw": "{{base_url}}/grades/course/{{course_id}}", "host": ["{{base_url}}"], "path": ["grades","course","{{course_id}}"] } }},
+        { "name": "44 Get Grade By ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/grades/{{grade_id}}", "host": ["{{base_url}}"], "path": ["grades","{{grade_id}}"] } }}
+      ]
+    },
+
+    {
+      "name": "Module 8 - Tuition & Payment",
+      "item": [
+        { "name": "45 Get Tuition By Student", "request": { "method": "GET", "url": { "raw": "{{base_url}}/tuitions/student/{{student_id}}", "host": ["{{base_url}}"], "path": ["tuitions","student","{{student_id}}"] } }},
+        { "name": "46 Create Payment", "request": { "method": "POST", "body": { "mode": "raw", "raw": "{ \"studentId\": 1, \"amount\": 5000000, \"method\": \"BANK_TRANSFER\" }" }, "url": { "raw": "{{base_url}}/payments", "host": ["{{base_url}}"], "path": ["payments"] } }},
+        { "name": "47 Get Payments By Student", "request": { "method": "GET", "url": { "raw": "{{base_url}}/payments/student/{{student_id}}", "host": ["{{base_url}}"], "path": ["payments","student","{{student_id}}"] } }},
+        { "name": "48 Get Payment By ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/payments/{{payment_id}}", "host": ["{{base_url}}"], "path": ["payments","{{payment_id}}"] } }}
+      ]
+    },
+
+    {
+      "name": "Module 9 - Notification & System",
+      "item": [
+        { "name": "49 Get Notifications", "request": { "method": "GET", "url": { "raw": "{{base_url}}/notifications", "host": ["{{base_url}}"], "path": ["notifications"] } }},
+        { "name": "50 Mark Notification Read", "request": { "method": "PUT", "url": { "raw": "{{base_url}}/notifications/{{notification_id}}/read", "host": ["{{base_url}}"], "path": ["notifications","{{notification_id}}","read"] } }},
+        { "name": "51 Get System Logs", "request": { "method": "GET", "url": { "raw": "{{base_url}}/system/logs", "host": ["{{base_url}}"], "path": ["system","logs"] } }},
+        { "name": "52 Health Check", "request": { "method": "GET", "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] } }}
+      ]
+    }
+  ]
+}
