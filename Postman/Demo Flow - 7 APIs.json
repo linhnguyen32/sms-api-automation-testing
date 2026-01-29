@@ -1,700 +1,1296 @@
 {
-	"info": {
-		"_postman_id": "74685b45-36ac-49eb-a990-b57ced3bc230",
-		"name": "Demo Flow - 7 APIs",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "40651347",
-		"_collection_link": "https://linh33.postman.co/workspace/do_an~ea3f6551-7a00-472c-92b2-d24bd8bc4197/collection/40651347-74685b45-36ac-49eb-a990-b57ced3bc230?action=share&source=collection_link&creator=40651347"
-	},
-	"item": [
-		{
-			"name": "01 Login Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// 1. Kiểm tra HTTP status\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"// 2. Kiểm tra giá trị nghiệp vụ\r",
-							"pm.test(\"Login message is correct\", function () {\r",
-							"    pm.expect(pm.response.json().message).to.eql(\"Login success\");\r",
-							"});\r",
-							"pm.test(\"Status code is 401\", function () {\r",
-							"    pm.response.to.have.status(401);\r",
-							"});\r",
-							"// 3. Không gửi Authorization header\r",
-							"pm.test(\"Unauthorized message returned\", function () {\r",
-							"    pm.expect(pm.response.json().message)\r",
-							"      .to.include(\"Unauthorized\");\r",
-							"});\r",
-							"// 4. Kiểm tra hệ thống bảo mật API\r",
-							"pm.test(\"Status code is 403\", function () {\r",
-							"    pm.response.to.have.status(403);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}/auth/login",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Login Success",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/auth/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"auth",
-								"login"
-							]
-						}
-					},
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json",
-							"description": "",
-							"type": "text"
-						}
-					],
-					"cookie": [],
-					"body": "{\r\n  \"code\": 200,\r\n  \"message\": \"Login success\",\r\n  \"data\": {\r\n    \"token\": \"mock_access_token_123\",\r\n    \"refreshToken\": \"mock_refresh_token_123\"\r\n  }\r\n}\r\n"
-				}
-			]
-		},
-		{
-			"name": "07 Get Students Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// 1. Kiểm tra HTTP status\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"// 2. Kiểm tra response là JSON hợp lệ\r",
-							"pm.test(\"Response is valid JSON\", function () {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"// 3. Kiểm tra cấu trúc response\r",
-							"pm.test(\"Response has student list\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonData).to.have.property(\"code\", 200);\r",
-							"    pm.expect(jsonData).to.have.property(\"data\");\r",
-							"    pm.expect(jsonData.data).to.be.an(\"array\");\r",
-							"    pm.expect(jsonData.data.length).to.be.above(0);\r",
-							"});\r",
-							"\r",
-							"// 4. Kiểm tra schema của 1 student\r",
-							"pm.test(\"Student object structure is correct\", function () {\r",
-							"    const student = pm.response.json().data[0];\r",
-							"\r",
-							"    pm.expect(student).to.have.property(\"id\");\r",
-							"    pm.expect(student).to.have.property(\"studentCode\");\r",
-							"    pm.expect(student).to.have.property(\"fullName\");\r",
-							"    pm.expect(student).to.have.property(\"email\");\r",
-							"    pm.expect(student).to.have.property(\"status\");\r",
-							"});\r",
-							"\r",
-							"// 5. Kiểm tra dữ liệu nghiệp vụ\r",
-							"pm.test(\"Student status is valid\", function () {\r",
-							"    const status = pm.response.json().data[0].status;\r",
-							"    pm.expect([\"ACTIVE\", \"INACTIVE\"]).to.include(status);\r",
-							"});\r",
-							"\r",
-							"// 6. Lưu student_id cho API tiếp theo\r",
-							"const studentId = pm.response.json().data[0].id;\r",
-							"pm.environment.set(\"student_id\", studentId);\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/students",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"students"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "07 Get Students",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/students",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"students"
-							]
-						}
-					},
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json",
-							"description": "",
-							"type": "text"
-						}
-					],
-					"cookie": [
-						{
-							"expires": "Invalid Date",
-							"domain": "",
-							"path": ""
-						}
-					],
-					"body": "{\r\n  \"code\": 200,\r\n  \"data\": [\r\n    {\r\n      \"id\": 1001,\r\n      \"studentCode\": \"SV1001\",\r\n      \"fullName\": \"Nguyen Phuong Linh\",\r\n      \"email\": \"linhp@test.com\",\r\n      \"status\": \"ACTIVE\"\r\n    }\r\n  ]\r\n}\r\n"
-				}
-			]
-		},
-		{
-			"name": "09 Create Student Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// 1. Kiểm tra HTTP status\r",
-							"pm.test(\"Status code is 201\", function () {\r",
-							"    pm.response.to.have.status(201);\r",
-							"});\r",
-							"\r",
-							"// 2. Kiểm tra response là JSON\r",
-							"pm.test(\"Response is valid JSON\", function () {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"// 3. Kiểm tra cấu trúc response\r",
-							"pm.test(\"Create student response structure is correct\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonData).to.have.property(\"code\", 201);\r",
-							"    pm.expect(jsonData).to.have.property(\"message\");\r",
-							"    pm.expect(jsonData).to.have.property(\"data\");\r",
-							"\r",
-							"    pm.expect(jsonData.data).to.have.property(\"id\");\r",
-							"    pm.expect(jsonData.data).to.have.property(\"studentCode\");\r",
-							"});\r",
-							"\r",
-							"// 4. Kiểm tra message nghiệp vụ\r",
-							"pm.test(\"Create student message is correct\", function () {\r",
-							"    pm.expect(pm.response.json().message)\r",
-							"        .to.eql(\"Student created successfully\");\r",
-							"});\r",
-							"\r",
-							"// 5. Kiểm tra thiếu email\r",
-							"pm.test(\"Validation error\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"studentCode\": \"SV1002\", \"fullName\": \"Nguyen Van A\", \"email\": \"sv1002@test.com\" }"
-				},
-				"url": {
-					"raw": "{{base_url}}/students",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"students"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Create Student success",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/students",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"students"
-							]
-						}
-					},
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json",
-							"description": "",
-							"type": "text"
-						}
-					],
-					"cookie": [],
-					"body": "{\r\n  \"code\": 201,\r\n  \"message\": \"Student created successfully\",\r\n  \"data\": {\r\n    \"id\": 1002,\r\n    \"studentCode\": \"SV1002\"\r\n  }\r\n}\r\n"
-				}
-			]
-		},
-		{
-			"name": "35 Get Enrollments By Student Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// 1. Kiểm tra HTTP status\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"// 2. Kiểm tra Student không tồn tại\r",
-							"pm.test(\"Student not found\", function () {\r",
-							"    pm.response.to.have.status(404);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/enrollments/student/{{student_id}}",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"enrollments",
-						"student",
-						"{{student_id}}"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "35 Get Enrollments By Student",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/enrollments/student/{{student_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"enrollments",
-								"student",
-								"{{student_id}}"
-							]
-						}
-					},
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json",
-							"description": "",
-							"type": "text"
-						}
-					],
-					"cookie": [
-						{
-							"expires": "Invalid Date",
-							"domain": "",
-							"path": ""
-						}
-					],
-					"body": "{\r\n  \"code\": 200,\r\n  \"data\": []\r\n}\r\n"
-				}
-			]
-		},
-		{
-			"name": "39 Get Grades By Student Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// 1. Kiểm tra HTTP status\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"// 2. Kiểm tra response là JSON\r",
-							"pm.test(\"Response is valid JSON\", function () {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"// 3. Kiểm tra cấu trúc response\r",
-							"pm.test(\"Grades response structure is correct\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonData).to.have.property(\"code\", 200);\r",
-							"    pm.expect(jsonData).to.have.property(\"data\");\r",
-							"    pm.expect(jsonData.data).to.have.property(\"studentId\");\r",
-							"    pm.expect(jsonData.data).to.have.property(\"grades\");\r",
-							"    pm.expect(jsonData.data.grades).to.be.an(\"array\");\r",
-							"    pm.expect(jsonData.data.grades.length).to.be.above(0);\r",
-							"});\r",
-							"\r",
-							"// 4. Kiểm tra liên kết studentId\r",
-							"pm.test(\"Grades belong to correct student\", function () {\r",
-							"    const studentId = pm.response.json().data.studentId;\r",
-							"    pm.expect(studentId).to.eql(\r",
-							"        parseInt(pm.environment.get(\"student_id\"))\r",
-							"    );\r",
-							"});\r",
-							"\r",
-							"// 5. Kiểm tra cấu trúc từng grade\r",
-							"pm.test(\"Grade object structure is valid\", function () {\r",
-							"    const grade = pm.response.json().data.grades[0];\r",
-							"\r",
-							"    pm.expect(grade).to.have.property(\"courseCode\");\r",
-							"    pm.expect(grade).to.have.property(\"midterm\");\r",
-							"    pm.expect(grade).to.have.property(\"final\");\r",
-							"    pm.expect(grade).to.have.property(\"total\");\r",
-							"});\r",
-							"\r",
-							"// 6. Kiểm tra nghiệp vụ điểm số\r",
-							"pm.test(\"Grade values are within valid range\", function () {\r",
-							"    const grade = pm.response.json().data.grades[0];\r",
-							"\r",
-							"    pm.expect(grade.midterm).to.be.within(0, 10);\r",
-							"    pm.expect(grade.final).to.be.within(0, 10);\r",
-							"    pm.expect(grade.total).to.be.within(0, 10);\r",
-							"});\r",
-							"\r",
-							"// 7. Lưu courseCode (nếu cần cho API sau)\r",
-							"pm.environment.set(\r",
-							"    \"course_code\",\r",
-							"    pm.response.json().data.grades[0].courseCode\r",
-							");\r",
-							"// 8. Kiểm tra Student chưa đăng ký môn\r",
-							"pm.test(\"Grades array exists\", function () {\r",
-							"    pm.expect(pm.response.json().data.grades).to.be.an(\"array\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/grades/student/{{student_id}}",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"grades",
-						"student",
-						"{{student_id}}"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Get Grades By Student",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/grades/student/{{student_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"grades",
-								"student",
-								"{{student_id}}"
-							]
-						}
-					},
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json",
-							"description": "",
-							"type": "text"
-						}
-					],
-					"cookie": [],
-					"body": "{\r\n  \"code\": 200,\r\n  \"data\": {\r\n    \"studentId\": 1002,\r\n    \"grades\": [\r\n      {\r\n        \"courseCode\": \"CS101\",\r\n        \"midterm\": 8.0,\r\n        \"final\": 9.0,\r\n        \"total\": 8.7\r\n      }\r\n    ]\r\n  }\r\n}\r\n"
-				}
-			]
-		},
-		{
-			"name": "45 Get Tuition By Student Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// 1. Kiểm tra HTTP status\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"// 2. Kiểm tra response là JSON\r",
-							"pm.test(\"Response is valid JSON\", function () {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"// 3. Kiểm tra cấu trúc response\r",
-							"pm.test(\"Tuition response structure is correct\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonData).to.have.property(\"code\", 200);\r",
-							"    pm.expect(jsonData).to.have.property(\"data\");\r",
-							"\r",
-							"    pm.expect(jsonData.data).to.have.property(\"studentId\");\r",
-							"    pm.expect(jsonData.data).to.have.property(\"totalTuition\");\r",
-							"    pm.expect(jsonData.data).to.have.property(\"paid\");\r",
-							"    pm.expect(jsonData.data).to.have.property(\"remaining\");\r",
-							"    pm.expect(jsonData.data).to.have.property(\"currency\");\r",
-							"});\r",
-							"\r",
-							"// 4. Kiểm tra liên kết studentId\r",
-							"pm.test(\"Tuition belongs to correct student\", function () {\r",
-							"    const studentId = pm.response.json().data.studentId;\r",
-							"    pm.expect(studentId).to.eql(\r",
-							"        parseInt(pm.environment.get(\"student_id\"))\r",
-							"    );\r",
-							"});\r",
-							"\r",
-							"// 5. Kiểm tra nghiệp vụ học phí\r",
-							"pm.test(\"Tuition calculation is correct\", function () {\r",
-							"    const data = pm.response.json().data;\r",
-							"\r",
-							"    pm.expect(data.totalTuition).to.be.a(\"number\");\r",
-							"    pm.expect(data.paid).to.be.a(\"number\");\r",
-							"    pm.expect(data.remaining).to.be.a(\"number\");\r",
-							"\r",
-							"    pm.expect(data.totalTuition).to.eql(data.paid + data.remaining);\r",
-							"});\r",
-							"\r",
-							"// 6. Kiểm tra đơn vị tiền tệ\r",
-							"pm.test(\"Currency is VND\", function () {\r",
-							"    pm.expect(pm.response.json().data.currency).to.eql(\"VND\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/tuitions/student/{{student_id}}",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"tuitions",
-						"student",
-						"{{student_id}}"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Get Tuition By Student",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/tuitions/student/{{student_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"tuitions",
-								"student",
-								"{{student_id}}"
-							]
-						}
-					},
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json",
-							"description": "",
-							"type": "text"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"studentId\": 1002,\n        \"totalTuition\": 5000000,\n        \"paid\": 3000000,\n        \"remaining\": 2000000,\n        \"currency\": \"VND\"\n    }\n}"
-				}
-			]
-		},
-		{
-			"name": "52 Health Check Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// 1. Kiểm tra HTTP status\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"// 2. Kiểm tra response là JSON\r",
-							"pm.test(\"Response is valid JSON\", function () {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"// 3. Kiểm tra cấu trúc response\r",
-							"pm.test(\"Health check response structure is correct\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"\r",
-							"    pm.expect(jsonData).to.have.property(\"code\", 200);\r",
-							"    pm.expect(jsonData).to.have.property(\"status\");\r",
-							"    pm.expect(jsonData).to.have.property(\"timestamp\");\r",
-							"});\r",
-							"\r",
-							"// 4. Kiểm tra trạng thái hệ thống\r",
-							"pm.test(\"System status is UP\", function () {\r",
-							"    pm.expect(pm.response.json().status).to.eql(\"UP\");\r",
-							"});\r",
-							"\r",
-							"// 5. Kiểm tra định dạng timestamp (ISO 8601)\r",
-							"pm.test(\"Timestamp format is valid ISO 8601\", function () {\r",
-							"    const timestamp = pm.response.json().timestamp;\r",
-							"    const isoRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/;\r",
-							"    pm.expect(timestamp).to.match(isoRegex);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/health",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"health"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "System Health OK",
-					"originalRequest": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/health",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"health"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": "{\r\n  \"code\": 200,\r\n  \"status\": \"UP\",\r\n  \"timestamp\": \"2025-06-30T10:00:00Z\"\r\n}\r\n"
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "5a35e538-611f-4f62-98da-32e84f18cd28",
+    "name": "Demo Flow - 7 APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40651347",
+    "_collection_link": "https://go.postman.co/collection/40651347-5a35e538-611f-4f62-98da-32e84f18cd28?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "TC01 Login Fail - WrongPass",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Error response có cấu trúc và kiểu dữ liệu hợp lệ\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "\r",
+              "    // Danh sách core fields cho error response\r",
+              "    const coreFields = {\r",
+              "        errorCode: \"string\",\r",
+              "        error: \"string\",\r",
+              "        message: \"string\",\r",
+              "        timestamp: \"string\",\r",
+              "        path: \"string\"\r",
+              "    };\r",
+              "\r",
+              "    // Response phải là object\r",
+              "    pm.expect(body).to.be.an(\"object\");\r",
+              "\r",
+              "    // Kiểm tra tồn tại và kiểu dữ liệu của core fields\r",
+              "    Object.keys(coreFields).forEach(function (field) {\r",
+              "        pm.expect(body).to.have.property(field);\r",
+              "        pm.expect(body[field]).to.be.a(coreFields[field]);\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-mock-response-name",
+            "value": "01 Login Failed 401",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"admin\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC02 Login Fail - Block Account",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Wrapper response có cấu trúc và kiểu dữ liệu hợp lệ\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "\r",
+              "    // Core fields của wrapper\r",
+              "    const coreFields = {\r",
+              "        code: \"number\",\r",
+              "        message: \"string\",\r",
+              "        data: \"object\" // null cũng được coi là object trong JS\r",
+              "    };\r",
+              "\r",
+              "    // Response phải là object\r",
+              "    pm.expect(body).to.be.an(\"object\");\r",
+              "\r",
+              "    // Kiểm tra core fields\r",
+              "    Object.keys(coreFields).forEach(function (field) {\r",
+              "        pm.expect(body).to.have.property(field);\r",
+              "\r",
+              "        if (field === \"data\") {\r",
+              "            pm.expect(body.data === null || typeof body.data === \"object\").to.be.true;\r",
+              "        } else {\r",
+              "            pm.expect(body[field]).to.be.a(coreFields[field]);\r",
+              "        }\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"student\",\r\n  \"password\": \"correct\",\r\n  \"role\": \"STUDENT\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC03 Login Success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// // Lấy status code\r",
+              "// const status = pm.response.code;\r",
+              "// const res = pm.response.json();\r",
+              "\r",
+              "// // ===== CASE 1: Login thành công =====\r",
+              "// if (status === 200) {\r",
+              "\r",
+              "//   pm.test(\"Login success\", () => {\r",
+              "//     pm.expect(res.message).to.eql(\"Login success\");\r",
+              "//   });\r",
+              "\r",
+              "//   pm.test(\"Token is returned\", () => {\r",
+              "//     pm.expect(res.data).to.have.property(\"token\");\r",
+              "//   });\r",
+              "\r",
+              "//   // Lưu token để dùng cho API sau\r",
+              "//   pm.environment.set(\"token\", res.data.token);\r",
+              "\r",
+              "// }\r",
+              "\r",
+              "// Lấy status code\r",
+              "const status = pm.response.code;\r",
+              "const res = pm.response.json();\r",
+              "\r",
+              "// ===== CASE 1: Login thành công =====\r",
+              "if (status === 200) {\r",
+              "\r",
+              "  pm.test(\"Login success\", () => {\r",
+              "    pm.expect(res.message).to.eql(\"Login success\");\r",
+              "  });\r",
+              "\r",
+              "  pm.test(\"Token is returned\", () => {\r",
+              "    pm.expect(res.data).to.have.property(\"token\");\r",
+              "  });\r",
+              "\r",
+              "  // Lưu token để dùng cho API sau\r",
+              "  pm.environment.set(\"token\", res.data.token);\r",
+              "\r",
+              "}\r",
+              "\r",
+              "// ===== CASE 2: Sai thông tin đăng nhập =====\r",
+              "else if (status === 401) {\r",
+              "\r",
+              "  pm.test(\"Unauthorized login\", () => {\r",
+              "    pm.expect(res.message).to.include(\"Invalid\");\r",
+              "  });\r",
+              "\r",
+              "  // Dừng workflow\r",
+              "  postman.setNextRequest(null);\r",
+              "}\r",
+              "\r",
+              "// ===== CASE 3: Không đủ quyền / bị khóa =====\r",
+              "else if (status === 403) {\r",
+              "\r",
+              "  pm.test(\"Forbidden login\", () => {\r",
+              "    pm.expect(res.message).to.include(\"forbidden\");\r",
+              "  });\r",
+              "\r",
+              "  // Dừng workflow\r",
+              "  postman.setNextRequest(null);\r",
+              "}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"username\": \"adminm\",\r\n  \"password\": \"123456\"\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "LOGIN_403_FORBIDDEN",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"student\",\r\n  \"password\": \"correct\",\r\n  \"role\": \"STUDENT\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "status": "Forbidden",
+          "code": 403,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            }
+          ],
+          "cookie": [],
+          "body": "{\r\n  \"code\": 403,\r\n  \"message\": \"Account is locked or forbidden\",\r\n  \"data\": null\r\n}\r\n"
+        },
+        {
+          "name": "Login Success (200)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"adminm\",\r\n  \"password\": \"123456\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Date",
+              "value": "Thu, 29 Jan 2026 11:10:15 GMT"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "x-srv-trace",
+              "value": "v=1;t=2b396f73713a6c7d"
+            },
+            {
+              "key": "x-srv-span",
+              "value": "v=1;s=6c053efc54207407"
+            },
+            {
+              "key": "access-control-allow-origin",
+              "value": "*"
+            },
+            {
+              "key": "x-ratelimit-limit",
+              "value": "120"
+            },
+            {
+              "key": "x-ratelimit-remaining",
+              "value": "117"
+            },
+            {
+              "key": "x-ratelimit-reset",
+              "value": "1769685024"
+            },
+            {
+              "key": "etag",
+              "value": "W/\"9c-A3MuAaSAw0WtQ8f+KBoS9K9jSJo\""
+            },
+            {
+              "key": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "key": "x-envoy-upstream-service-time",
+              "value": "150"
+            },
+            {
+              "key": "cf-cache-status",
+              "value": "DYNAMIC"
+            },
+            {
+              "key": "Set-Cookie",
+              "value": "__cf_bm=WeGRVwRMpB.3OXd8stmMURfBUXBXD9dkyKFoOw5ru9o-1769685015-1.0.1.1-rTmi8Wyp1jUBdjt6i5eS9o0wjQna6PpP8PDnttZqrCKd4795JX2CYGzbxQmfUhHpcLRnLrilDyWslqWThyTxju4JlAHLw54pCHZJklP2nKg; path=/; expires=Thu, 29-Jan-26 11:40:15 GMT; domain=.pstmn.io; HttpOnly; Secure; SameSite=None"
+            },
+            {
+              "key": "Server",
+              "value": "cloudflare"
+            },
+            {
+              "key": "CF-RAY",
+              "value": "9c58482cec84064f-HKG"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"code\": 200,\n    \"message\": \"Login success\",\n    \"data\": {\n        \"token\": \"mock_access_token_123\",\n        \"refreshToken\": \"mock_refresh_token_123\"\n    }\n}"
+        },
+        {
+          "name": "01 Login Failed 401",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-mock-response-name",
+                "value": "LOGIN_401_UNAUTHORIZED",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"admin\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "{\r\n  \"errorCode\": \"AUTH_401\",\r\n  \"error\": \"UNAUTHORIZED\",\r\n  \"message\": \"Tên đăng nhập hoặc mật khẩu không đúng\",\r\n  \"timestamp\": \"2026-01-29T10:15:30Z\",\r\n  \"path\": \"/auth/login\"\r\n}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "TC06 Get Students Fail - no token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Wrapper error response có cấu trúc và kiểu dữ liệu hợp lệ\", function () {\r",
+              "    const body = pm.response.json();\r",
+              "\r",
+              "    // Core fields của wrapper\r",
+              "    const coreFields = {\r",
+              "        code: \"number\",\r",
+              "        message: \"string\",\r",
+              "        data: \"object\",\r",
+              "        error: \"object\"\r",
+              "    };\r",
+              "\r",
+              "    // Response phải là object\r",
+              "    pm.expect(body).to.be.an(\"object\");\r",
+              "\r",
+              "    // Kiểm tra core fields\r",
+              "    Object.keys(coreFields).forEach(function (field) {\r",
+              "        pm.expect(body).to.have.property(field);\r",
+              "\r",
+              "        if (field === \"data\") {\r",
+              "            // data được phép null hoặc object/array\r",
+              "            pm.expect(body.data === null || typeof body.data === \"object\").to.be.true;\r",
+              "        } else {\r",
+              "            pm.expect(body[field]).to.be.an(coreFields[field]);\r",
+              "        }\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/students",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "students"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC07 Get Students - success",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra HTTP status\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Kiểm tra response là JSON hợp lệ\r",
+              "pm.test(\"Response is valid JSON\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Kiểm tra cấu trúc response\r",
+              "pm.test(\"Response has student list\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    pm.expect(jsonData).to.have.property(\"code\", 200);\r",
+              "    pm.expect(jsonData).to.have.property(\"data\");\r",
+              "    pm.expect(jsonData.data).to.be.an(\"array\");\r",
+              "    pm.expect(jsonData.data.length).to.be.above(0);\r",
+              "});\r",
+              "\r",
+              "// 4. Kiểm tra schema của 1 student\r",
+              "pm.test(\"Student object structure is correct\", function () {\r",
+              "    const student = pm.response.json().data[0];\r",
+              "\r",
+              "    pm.expect(student).to.have.property(\"id\");\r",
+              "    pm.expect(student).to.have.property(\"studentCode\");\r",
+              "    pm.expect(student).to.have.property(\"fullName\");\r",
+              "    pm.expect(student).to.have.property(\"email\");\r",
+              "    pm.expect(student).to.have.property(\"status\");\r",
+              "});\r",
+              "\r",
+              "// 5. Kiểm tra dữ liệu nghiệp vụ\r",
+              "pm.test(\"Student status is valid\", function () {\r",
+              "    const status = pm.response.json().data[0].status;\r",
+              "    pm.expect([\"ACTIVE\", \"INACTIVE\"]).to.include(status);\r",
+              "});\r",
+              "\r",
+              "// 6. Lưu student_id cho API tiếp theo\r",
+              "pm.test(\"Student id is saved to environment\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    const studentId = jsonData.data[0].id;\r",
+              "\r",
+              "    pm.expect(studentId).to.exist;\r",
+              "    pm.environment.set(\"student_id\", studentId);\r",
+              "});\r",
+              "\r",
+              "// Nếu chưa có token → FAIL ngay\r",
+              "const token = pm.environment.get(\"token\");\r",
+              "\r",
+              "pm.test(\"Token must exist\", () => {\r",
+              "  pm.expect(token, \"Missing access token\").to.exist;\r",
+              "});\r",
+              "\r",
+              "// Nếu không có token → dừng workflow\r",
+              "if (!token) {\r",
+              "  postman.setNextRequest(null);\r",
+              "  throw new Error(\"No token → stop workflow\");\r",
+              "}\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/students?token={{token}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "students"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "{{token}}"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "07 Get Students Success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/students?token={{token}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "students"
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            }
+          },
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "{\r\n  \"code\": 200,\r\n  \"data\": [\r\n    {\r\n      \"id\": 1001,\r\n      \"studentCode\": \"SV1001\",\r\n      \"fullName\": \"Nguyen Phuong Linh\",\r\n      \"email\": \"linhp@test.com\",\r\n      \"status\": \"ACTIVE\"\r\n    }\r\n  ]\r\n}\r\n"
+        },
+        {
+          "name": "Get Student Fail - No token",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/students",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "students"
+              ]
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "Text",
+          "header": [],
+          "cookie": [],
+          "body": "{\r\n  \"code\": 40102,\r\n  \"message\": \"Token không hợp lệ\",\r\n  \"data\": null,\r\n  \"error\": {\r\n    \"type\": \"AUTH_INVALID_TOKEN\",\r\n    \"detail\": \"Token không đúng định dạng hoặc không tồn tại trong hệ thống\"\r\n  }\r\n}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "TC09 Create Student",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra HTTP status\r",
+              "pm.test(\"Status code is 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "// Parse response\r",
+              "let res = pm.response.json();\r",
+              "\r",
+              "/* ========= Kiểm tra wrapper ========= */\r",
+              "pm.test(\"Response có code là number\", function () {\r",
+              "    pm.expect(res).to.have.property(\"code\");\r",
+              "    pm.expect(res.code).to.be.a(\"number\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response có message là string\", function () {\r",
+              "    pm.expect(res).to.have.property(\"message\");\r",
+              "    pm.expect(res.message).to.be.a(\"string\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response có data\", function () {\r",
+              "    pm.expect(res).to.have.property(\"data\");\r",
+              "});\r",
+              "\r",
+              "/* ========= Kiểm tra data object ========= */\r",
+              "pm.test(\"Data là object hợp lệ\", function () {\r",
+              "    pm.expect(res.data).to.be.an(\"object\");\r",
+              "    pm.expect(res.data).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "/* ========= Core fields của data ========= */\r",
+              "const coreFields = {\r",
+              "    id: \"number\",\r",
+              "    studentCode: \"string\"\r",
+              "};\r",
+              "\r",
+              "pm.test(\"Data có đầy đủ core fields với đúng kiểu dữ liệu\", function () {\r",
+              "    Object.keys(coreFields).forEach(field => {\r",
+              "        pm.expect(res.data).to.have.property(field);\r",
+              "        pm.expect(res.data[field]).to.be.a(coreFields[field]);\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"studentCode\": \"SV1002\", \"fullName\": \"Nguyen Van A\", \"email\": \"sv1002@test.com\" }"
+        },
+        "url": {
+          "raw": "{{base_url}}/students",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "students"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Create Student success",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/students",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "students"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            }
+          ],
+          "cookie": [],
+          "body": "{\r\n  \"code\": 201,\r\n  \"message\": \"Student created successfully\",\r\n  \"data\": {\r\n    \"id\": 1002,\r\n    \"studentCode\": \"SV1002\"\r\n  }\r\n}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "TC35 Get Enrollments By Student",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra HTTP status\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// Parse response\r",
+              "let res = pm.response.json();\r",
+              "\r",
+              "/* ========= Kiểm tra wrapper ========= */\r",
+              "pm.test(\"Response có code là number\", function () {\r",
+              "    pm.expect(res).to.have.property(\"code\");\r",
+              "    pm.expect(res.code).to.be.a(\"number\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response có data\", function () {\r",
+              "    pm.expect(res).to.have.property(\"data\");\r",
+              "});\r",
+              "\r",
+              "/* ========= Kiểm tra data dạng array ========= */\r",
+              "pm.test(\"Data là array\", function () {\r",
+              "    pm.expect(res.data).to.be.an(\"array\");\r",
+              "});\r",
+              "\r",
+              "/* ========= Kiểm tra cấu trúc item khi array có dữ liệu ========= */\r",
+              "// Core fields – chỉnh theo schema thực tế khi cần\r",
+              "const coreFields = {\r",
+              "    id: \"number\",\r",
+              "    name: \"string\"\r",
+              "};\r",
+              "\r",
+              "pm.test(\"Các item trong data có cấu trúc nhất quán (nếu có dữ liệu)\", function () {\r",
+              "    if (res.data.length === 0) {\r",
+              "        pm.expect(res.data.length).to.eql(0);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    res.data.forEach(item => {\r",
+              "        Object.keys(coreFields).forEach(field => {\r",
+              "            pm.expect(item).to.have.property(field);\r",
+              "            pm.expect(item[field]).to.be.a(coreFields[field]);\r",
+              "        });\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/enrollments/student/{{student_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "enrollments",
+            "student",
+            "{{student_id}}"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "35 Get Enrollments By Student",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/enrollments/student/{{student_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "enrollments",
+                "student",
+                "{{student_id}}"
+              ]
+            }
+          },
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            }
+          ],
+          "cookie": [
+            {
+              "expires": "Invalid Date",
+              "domain": "",
+              "path": ""
+            }
+          ],
+          "body": "{\r\n  \"code\": 200,\r\n  \"data\": []\r\n}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "TC39 Get Grades By Student",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra HTTP status\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// Parse response\r",
+              "let res = pm.response.json();\r",
+              "\r",
+              "/* ========= Kiểm tra wrapper ========= */\r",
+              "pm.test(\"Response có code là number\", function () {\r",
+              "    pm.expect(res).to.have.property(\"code\");\r",
+              "    pm.expect(res.code).to.be.a(\"number\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response có data\", function () {\r",
+              "    pm.expect(res).to.have.property(\"data\");\r",
+              "});\r",
+              "\r",
+              "/* ========= Kiểm tra data object ========= */\r",
+              "pm.test(\"Data là object hợp lệ\", function () {\r",
+              "    pm.expect(res.data).to.be.an(\"object\");\r",
+              "    pm.expect(res.data).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "/* ========= Core fields của data ========= */\r",
+              "const dataCoreFields = {\r",
+              "    studentId: \"number\",\r",
+              "    grades: \"array\"\r",
+              "};\r",
+              "\r",
+              "pm.test(\"Data có đầy đủ core fields với đúng kiểu dữ liệu\", function () {\r",
+              "    Object.keys(dataCoreFields).forEach(field => {\r",
+              "        pm.expect(res.data).to.have.property(field);\r",
+              "\r",
+              "        if (dataCoreFields[field] === \"array\") {\r",
+              "            pm.expect(res.data[field]).to.be.an(\"array\");\r",
+              "        } else {\r",
+              "            pm.expect(res.data[field]).to.be.a(dataCoreFields[field]);\r",
+              "        }\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "/* ========= Kiểm tra grades array ========= */\r",
+              "// Core fields của từng grade item\r",
+              "const gradeCoreFields = {\r",
+              "    courseCode: \"string\",\r",
+              "    midterm: \"number\",\r",
+              "    final: \"number\",\r",
+              "    total: \"number\"\r",
+              "};\r",
+              "\r",
+              "pm.test(\"Các item trong grades có cấu trúc đúng (nếu có)\", function () {\r",
+              "    if (res.data.grades.length === 0) return;\r",
+              "\r",
+              "    res.data.grades.forEach(item => {\r",
+              "        pm.expect(item).to.be.an(\"object\");\r",
+              "\r",
+              "        Object.keys(gradeCoreFields).forEach(field => {\r",
+              "            pm.expect(item).to.have.property(field);\r",
+              "            pm.expect(item[field]).to.be.a(gradeCoreFields[field]);\r",
+              "        });\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/grades/student/{{student_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "grades",
+            "student",
+            "{{student_id}}"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Grades By Student",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grades/student/{{student_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "grades",
+                "student",
+                "{{student_id}}"
+              ]
+            }
+          },
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            }
+          ],
+          "cookie": [],
+          "body": "{\r\n  \"code\": 200,\r\n  \"data\": {\r\n    \"studentId\": 1002,\r\n    \"grades\": [\r\n      {\r\n        \"courseCode\": \"CS101\",\r\n        \"midterm\": 8.0,\r\n        \"final\": 9.0,\r\n        \"total\": 8.7\r\n      }\r\n    ]\r\n  }\r\n}\r\n"
+        }
+      ]
+    },
+    {
+      "name": "TC45 Get Tuition By Student",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra HTTP status\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "// Parse response\r",
+              "let res = pm.response.json();\r",
+              "\r",
+              "/* ========= Kiểm tra wrapper ========= */\r",
+              "pm.test(\"Response có code là number\", function () {\r",
+              "    pm.expect(res).to.have.property(\"code\");\r",
+              "    pm.expect(res.code).to.be.a(\"number\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response có data\", function () {\r",
+              "    pm.expect(res).to.have.property(\"data\");\r",
+              "});\r",
+              "\r",
+              "/* ========= Kiểm tra data object ========= */\r",
+              "pm.test(\"Data là object hợp lệ\", function () {\r",
+              "    pm.expect(res.data).to.be.an(\"object\");\r",
+              "    pm.expect(res.data).to.not.be.null;\r",
+              "});\r",
+              "\r",
+              "/* ========= Core fields của data ========= */\r",
+              "// Chỉnh danh sách này theo schema thực tế\r",
+              "const dataCoreFields = {\r",
+              "    studentId: \"number\",\r",
+              "    totalTuition: \"number\",\r",
+              "    paid: \"number\",\r",
+              "    remaining: \"number\",\r",
+              "    currency: \"string\"\r",
+              "};\r",
+              "\r",
+              "pm.test(\"Data có đầy đủ core fields với đúng kiểu dữ liệu\", function () {\r",
+              "    Object.keys(dataCoreFields).forEach(field => {\r",
+              "        pm.expect(res.data).to.have.property(field);\r",
+              "        pm.expect(res.data[field]).to.be.a(dataCoreFields[field]);\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/tuitions/student/{{student_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "tuitions",
+            "student",
+            "{{student_id}}"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Get Tuition By Student",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tuitions/student/{{student_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "tuitions",
+                "student",
+                "{{student_id}}"
+              ]
+            }
+          },
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "description": "",
+              "type": "text"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"code\": 200,\n    \"data\": {\n        \"studentId\": 1002,\n        \"totalTuition\": 5000000,\n        \"paid\": 3000000,\n        \"remaining\": 2000000,\n        \"currency\": \"VND\"\n    }\n}"
+        }
+      ]
+    },
+    {
+      "name": "TC52 Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// 1. Kiểm tra HTTP status\r",
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "// 2. Kiểm tra response là JSON\r",
+              "pm.test(\"Response is valid JSON\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "// 3. Kiểm tra cấu trúc response\r",
+              "pm.test(\"Health check response structure is correct\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "\r",
+              "    pm.expect(jsonData).to.have.property(\"code\", 200);\r",
+              "    pm.expect(jsonData).to.have.property(\"status\");\r",
+              "    pm.expect(jsonData).to.have.property(\"timestamp\");\r",
+              "});\r",
+              "\r",
+              "// 4. Kiểm tra trạng thái hệ thống\r",
+              "pm.test(\"System status is UP\", function () {\r",
+              "    pm.expect(pm.response.json().status).to.eql(\"UP\");\r",
+              "});\r",
+              "\r",
+              "// 5. Kiểm tra định dạng timestamp (ISO 8601)\r",
+              "pm.test(\"Timestamp format is valid ISO 8601\", function () {\r",
+              "    const timestamp = pm.response.json().timestamp;\r",
+              "    const isoRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/;\r",
+              "    pm.expect(timestamp).to.match(isoRegex);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "System Health OK",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "_postman_previewlanguage": "Text",
+          "header": [],
+          "cookie": [],
+          "body": "{\r\n  \"code\": 200,\r\n  \"status\": \"UP\",\r\n  \"timestamp\": \"2025-06-30T10:00:00Z\"\r\n}\r\n"
+        }
+      ]
+    }
+  ]
 }
